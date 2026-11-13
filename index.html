@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<title>Razva Qaytlari</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0f1115;--card:#1a1d24;--line:#2a2f3a;--txt:#f1f3f7;--mut:#8b93a3;--acc:#4ade80;--acc2:#22c55e;--red:#f87171;--blue:#60a5fa}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:16px;-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:0}
+input,button{font:inherit;color:inherit}
+input{width:100%;background:#111419;border:1px solid var(--line);border-radius:12px;padding:13px 14px;font-size:16px;outline:none}
+input:focus{border-color:var(--acc)}
+label{display:block;font-size:13px;color:var(--mut);margin:12px 0 6px}
+button{border:0;border-radius:12px;padding:14px;font-weight:600;cursor:pointer;background:var(--acc2);color:#04210f;width:100%;font-size:16px}
+button:active{transform:scale(.98)}
+button.sec{background:var(--card);color:var(--txt);border:1px solid var(--line)}
+button.blue{background:var(--blue);color:#06182e}
+button.del{background:transparent;color:var(--red);width:auto;padding:6px 10px;font-size:14px}
+.top{position:sticky;top:0;z-index:5;background:rgba(15,17,21,.92);backdrop-filter:blur(8px);padding:calc(14px + env(safe-area-inset-top)) 16px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.top small{color:var(--mut)}
+.wrap{padding:16px;max-width:560px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:#12151a;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:10}
+.tabs button{background:none;color:var(--mut);border-radius:0;padding:10px 2px 9px;font-size:11px;font-weight:500;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tabs button span{font-size:20px;line-height:1}
+.tabs button.on{color:var(--acc)}
+.sec-p{display:none}.sec-p.on{display:block}
+/* login */
+#login{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+#login .box{width:100%;max-width:360px;text-align:center}
+#login h1{font-size:28px;margin-bottom:6px}
+#login p{color:var(--mut);margin:0 0 22px}
+#err{color:var(--red);font-size:14px;min-height:20px;margin:8px 0}
+/* calc */
+.disp{background:#0b0d11;border-radius:14px;padding:16px;text-align:right;margin-bottom:12px;min-height:84px}
+.disp .e{color:var(--mut);font-size:15px;min-height:20px;word-break:break-all}
+.disp .r{font-size:34px;font-weight:700;word-break:break-all}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.keys button{background:#222733;color:var(--txt);padding:0;height:60px;font-size:22px;border-radius:14px}
+.keys .op{background:#2b3a52;color:var(--blue)}
+.keys .eq{background:var(--acc2);color:#04210f}
+.keys .cl{background:#3a2326;color:var(--red)}
+/* sheet */
+.sheetbox{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:62vh;-webkit-overflow-scrolling:touch;background:#111419}
+table{border-collapse:collapse;min-width:100%}
+th,td{border:1px solid var(--line);padding:0}
+th{background:#1f232c;color:var(--mut);font-size:12px;position:sticky;top:0;z-index:2;padding:6px 4px;min-width:84px}
+td.rn{background:#1f232c;color:var(--mut);font-size:12px;text-align:center;width:34px;min-width:34px;position:sticky;left:0;z-index:1}
+td input{border:0;border-radius:0;background:transparent;padding:10px 8px;min-width:84px;width:84px;font-size:15px}
+td input:focus{background:#1b2a22;outline:1px solid var(--acc)}
+tr.sum td{background:#16301f;font-weight:700;padding:10px 8px;font-size:14px;color:var(--acc)}
+/* lists */
+.item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);gap:8px}
+.item:last-child{border:0}
+.item b{display:block}.item small{color:var(--mut)}
+.amt{color:var(--acc);font-weight:700;white-space:nowrap}
+.total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;padding-top:12px;border-top:1px dashed var(--line);margin-top:6px}
+.total span:last-child{color:var(--acc)}
+.big{font-size:26px;font-weight:800;color:var(--acc);text-align:center;padding:10px;background:#0b0d11;border-radius:12px;margin-top:12px}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#222733;border:1px solid var(--line);padding:12px 18px;border-radius:12px;z-index:200;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center}
+#toast.show{opacity:1}
+.hint{color:var(--mut);font-size:13px;margin-top:8px;line-height:1.4}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="box">
+    <h1>Razva Qaytlari</h1>
+    <p>Kirish uchun parolni kiriting</p>
+    <input id="pw" type="password" placeholder="Parol" autocomplete="current-password">
+    <div id="err"></div>
+    <button id="loginBtn">Kirish</button>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="top"><h1>Razva Qaytlari</h1><button class="sec" id="logout" style="width:auto;padding:8px 14px;font-size:14px">Chiqish</button></div>
+  <div class="wrap">
+
+    <!-- KALKULYATOR -->
+    <div class="sec-p on" id="p-calc">
+      <div class="card">
+        <div class="disp"><div class="e" id="ce"></div><div class="r" id="cr">0</div></div>
+        <div class="keys" id="keys"></div>
+      </div>
+    </div>
+
+    <!-- JADVAL -->
+    <div class="sec-p" id="p-sheet">
+      <div class="card">
+        <label style="margin-top:0">Ism / nom</label>
+        <input id="sName" placeholder="Ism yozing">
+        <div class="hint">Formula: <b>=A1+B1</b>, <b>=A1*B1</b>, <b>=SUM(A1:A5)</b></div>
+      </div>
+      <div class="sheetbox"><table id="tbl"></table></div>
+      <div class="row" style="margin-top:12px">
+        <button class="sec" id="addRow">+ Qator</button>
+        <button class="sec" id="addCol">+ Ustun</button>
+        <button class="sec" id="clrSheet">Tozalash</button>
+      </div>
+      <div style="margin-top:12px"><button class="blue" id="sendSheet">Doimiy saqlash (Telegramga)</button></div>
+    </div>
+
+    <!-- OYLIK -->
+    <div class="sec-p" id="p-oylik">
+      <div class="card">
+        <label style="margin-top:0">Ism</label>
+        <input id="oName" placeholder="Ishchi ismi">
+        <div class="row">
+          <div><label>Sana</label><input id="oDate" type="date"></div>
+          <div><label>Kunlik summa (so'm)</label><input id="oSum" type="number" inputmode="decimal" placeholder="0"></div>
+        </div>
+        <div style="margin-top:14px"><button id="oSave">Saqlash</button></div>
+      </div>
+      <div class="card">
+        <div id="oList"></div>
+        <div class="total"><span>Jami</span><span id="oTotal">0</span></div>
+      </div>
+      <button class="blue" id="oSend">Doimiy saqlash (Telegramga)</button>
+    </div>
+
+    <!-- OBYOM -->
+    <div class="sec-p" id="p-obyom">
+      <div class="card">
+        <label style="margin-top:0">Ism</label>
+        <input id="bName" placeholder="Ishchi ismi">
+        <div class="row">
+          <div><label>Nechta qo'ydi</label><input id="bCnt" type="number" inputmode="decimal" placeholder="0"></div>
+          <div><label>Bittasi necha so'm</label><input id="bPrice" type="number" inputmode="decimal" placeholder="0"></div>
+        </div>
+        <label>Sana</label><input id="bDate" type="date">
+        <div class="big" id="bToday">Bugun: 0 so'm</div>
+        <div style="margin-top:14px"><button id="bSave">Saqlash</button></div>
+      </div>
+      <div class="card">
+        <div id="bList"></div>
+        <div class="total"><span>Jami</span><span id="bTotal">0</span></div>
+      </div>
+      <button class="blue" id="bSend">Doimiy saqlash (Telegramga)</button>
+    </div>
+
+    <!-- SOZLAMA -->
+    <div class="sec-p" id="p-set">
+      <div class="card">
+        <h1 style="font-size:18px">Telegram bot sozlamasi</h1>
+        <label>Bot token</label>
+        <input id="tgToken" placeholder="123456:ABC-DEF...">
+        <label>Chat ID</label>
+        <input id="tgChat" placeholder="123456789">
+        <div style="margin-top:14px" class="row"><button id="tgSave">Saqlash</button><button class="sec" id="tgTest">Sinash</button></div>
+        <div class="hint">Token: Telegramda @BotFather orqali bot yarating. Chat ID: botga /start yozing, so'ng @userinfobot dan ID oling. Ma'lumotlar faqat shu qurilmada saqlanadi.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="on" data-p="calc"><span>🧮</span>Kalkulyator</button>
+    <button data-p="sheet"><span>📊</span>Jadval</button>
+    <button data-p="oylik"><span>👷</span>Oylik</button>
+    <button data-p="obyom"><span>📦</span>Obyom</button>
+    <button data-p="set"><span>⚙️</span>Sozlama</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const PASS="razva123";
+const store={get(k,d){try{const v=localStorage.getItem("rq_"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("rq_"+k,JSON.stringify(v))}catch(e){}}};
+const fmt=n=>(Math.round(n*100)/100).toLocaleString("ru-RU").replace(/\u00a0/g," ");
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("show"),2200)}
+
+/* LOGIN */
+function enter(){$("#login").style.display="none";$("#app").style.display="block"}
+function tryLogin(){
+  if($("#pw").value===PASS){store.set("auth",1);enter()}
+  else{$("#err").textContent="Parol noto'g'ri";$("#pw").value=""}
+}
+$("#loginBtn").onclick=tryLogin;
+$("#pw").addEventListener("keydown",e=>{if(e.key==="Enter")tryLogin()});
+$("#logout").onclick=()=>{store.set("auth",0);location.reload()};
+if(store.get("auth",0)===1)enter();
+
+/* TABS */
+$("#tabs").onclick=e=>{
+  const b=e.target.closest("button");if(!b)return;
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll(".sec-p").forEach(x=>x.classList.toggle("on",x.id==="p-"+b.dataset.p));
+  window.scrollTo(0,0);
+};
+
+/* KALKULYATOR */
+let expr="";
+const keys=["C","⌫","%","÷","7","8","9","×","4","5","6","−","1","2","3","+","0",".","00","="];
+const kbox=$("#keys");
+keys.forEach(k=>{
+  const b=document.createElement("button");b.textContent=k;
+  if("÷×−+%".includes(k))b.className="op";
+  if(k==="=")b.className="eq";
+  if(k==="C")b.className="cl";
+  b.onclick=()=>press(k);kbox.appendChild(b);
+});
+function calc(s){
+  const t=s.replace(/÷/g,"/").replace(/×/g,"*").replace(/−/g,"-").replace(/(\d+(\.\d+)?)%/g,"($1/100)");
+  if(!/^[0-9+\-*/().\s]+$/.test(t))return null;
+  try{const v=Function('"use strict";return ('+t+')')();return isFinite(v)?v:null}catch(e){return null}
+}
+function press(k){
+  if(k==="C")expr="";
+  else if(k==="⌫")expr=expr.slice(0,-1);
+  else if(k==="="){const v=calc(expr);if(v!==null){$("#ce").textContent=expr+" =";expr=String(Math.round(v*1e8)/1e8);$("#cr").textContent=fmt(+expr);return}else{$("#cr").textContent="Xato";return}}
+  else{
+    if("÷×−+".includes(k)&&/[÷×−+]$/.test(expr))expr=expr.slice(0,-1);
+    if((k==="÷"||k==="×")&&expr==="")return;
+    expr+=k;
+  }
+  $("#ce").textContent=expr;
+  const v=calc(expr);$("#cr").textContent=v!==null&&expr?fmt(v):"0";
+}
+
+/* EXCEL JADVAL */
+let sheet=store.get("sheet",null)||{rows:20,cols:6,data:{}};
+const colL=i=>String.fromCharCode(65+i);
+function raw(r,c){return sheet.data[colL(c)+(r+1)]||""}
+function val(ref,seen){
+  seen=seen||{};if(seen[ref])return 0;seen[ref]=1;
+  const r=sheet.data[ref]||"";
+  if(r[0]==="="){const v=evalF(r,seen);return typeof v==="number"?v:0}
+  const n=parseFloat(String(r).replace(/\s/g,"").replace(",","."));return isNaN(n)?0:n;
+}
+function range(a,b,seen){
+  const ma=a.match(/^([A-Z])(\d+)$/),mb=b.match(/^([A-Z])(\d+)$/);if(!ma||!mb)return 0;
+  let s=0;const c1=Math.min(ma[1].charCodeAt(0),mb[1].charCodeAt(0)),c2=Math.max(ma[1].charCodeAt(0),mb[1].charCodeAt(0));
+  const r1=Math.min(+ma[2],+mb[2]),r2=Math.max(+ma[2],+mb[2]);
+  for(let c=c1;c<=c2;c++)for(let r=r1;r<=r2;r++)s+=val(String.fromCharCode(c)+r,Object.assign({},seen));
+  return s;
+}
+function evalF(f,seen){
+  let e=f.slice(1).toUpperCase().replace(/,/g,".");
+  e=e.replace(/SUM\(([A-Z]\d+):([A-Z]\d+)\)/g,(m,a,b)=>"("+range(a,b,seen)+")");
+  e=e.replace(/\b([A-Z]\d+)\b/g,(m,r)=>"("+val(r,Object.assign({},seen))+")");
+  if(!/^[0-9+\-*/().\s]+$/.test(e))return "#XATO";
+  try{const v=Function('"use strict";return ('+e+')')();return isFinite(v)?v:"#XATO"}catch(x){return "#XATO"}
+}
+function disp(r,c){
+  const x=raw(r,c);
+  if(x[0]==="="){const v=evalF(x,{});return typeof v==="number"?fmt(v):v}
+  return x;
+}
+function colSum(c){let s=0;for(let r=0;r<sheet.rows;r++){const x=raw(r,c);if(x==="")continue;if(x[0]==="="){const v=evalF(x,{});if(typeof v==="number")s+=v}else{const n=parseFloat(x.replace(/\s/g,"").replace(",","."));if(!isNaN(n))s+=n}}return s}
+function renderSheet(){
+  let h="<tr><th style='min-width:34px;width:34px;left:0;z-index:3'></th>";
+  for(let c=0;c<sheet.cols;c++)h+="<th>"+colL(c)+"</th>";
+  h+="</tr>";
+  for(let r=0;r<sheet.rows;r++){
+    h+="<tr><td class='rn'>"+(r+1)+"</td>";
+    for(let c=0;c<sheet.cols;c++)h+="<td><input data-r='"+r+"' data-c='"+c+"' inputmode='text' autocomplete='off' value=\""+disp(r,c).replace(/"/g,"&quot;")+"\"></td>";
+    h+="</tr>";
+  }
+  h+="<tr class='sum'><td class='rn' style='background:#16301f'>Σ</td>";
+  for(let c=0;c<sheet.cols;c++)h+="<td id='s"+c+"'>"+fmt(colSum(c))+"</td>";
+  h+="</tr>";
+  $("#tbl").innerHTML=h;
+}
+function refreshSheet(){
+  document.querySelectorAll("#tbl input").forEach(i=>{if(document.activeElement!==i)i.value=disp(+i.dataset.r,+i.dataset.c)});
+  for(let c=0;c<sheet.cols;c++){const e=$("#s"+c);if(e)e.textContent=fmt(colSum(c))}
+}
+$("#tbl").addEventListener("focusin",e=>{if(e.target.tagName==="INPUT")e.target.value=raw(+e.target.dataset.r,+e.target.dataset.c)});
+$("#tbl").addEventListener("input",e=>{
+  const i=e.target;sheet.data[colL(+i.dataset.c)+(+i.dataset.r+1)]=i.value;store.set("sheet",sheet);
+});
+$("#tbl").addEventListener("focusout",e=>{if(e.target.tagName==="INPUT"){e.target.value=disp(+e.target.dataset.r,+e.target.dataset.c);refreshSheet()}});
+$("#addRow").onclick=()=>{sheet.rows++;store.set("sheet",sheet);renderSheet()};
+$("#addCol").onclick=()=>{if(sheet.cols<26){sheet.cols++;store.set("sheet",sheet);renderSheet()}};
+$("#clrSheet").onclick=()=>{if(confirm("Jadval tozalansinmi?")){sheet={rows:20,cols:6,data:{}};store.set("sheet",sheet);renderSheet()}};
+$("#sName").value=store.get("sName","");
+$("#sName").oninput=e=>store.set("sName",e.target.value);
+renderSheet();
+
+/* OYLIK */
+let oylik=store.get("oylik",[]);
+$("#oDate").value=today();
+$("#oName").value=store.get("oName","");
+$("#oName").oninput=e=>store.set("oName",e.target.value);
+function renderO(){
+  $("#oList").innerHTML=oylik.length?oylik.map((x,i)=>"<div class='item'><div><b>"+esc(x.name||"—")+"</b><small>"+x.date+"</small></div><div style='display:flex;align-items:center;gap:4px'><span class='amt'>"+fmt(x.sum)+"</span><button class='del' data-i='"+i+"'>✕</button></div></div>").join(""):"<div class='hint'>Hali yozuv yo'q</div>";
+  $("#oTotal").textContent=fmt(oylik.reduce((a,x)=>a+x.sum,0))+" so'm";
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+$("#oSave").onclick=()=>{
+  const s=parseFloat($("#oSum").value);
+  if(isNaN(s)){toast("Summani kiriting");return}
+  oylik.push({name:$("#oName").value.trim(),date:$("#oDate").value||today(),sum:s});
+  store.set("oylik",oylik);$("#oSum").value="";renderO();toast("Saqlandi ✓");
+};
+$("#oList").onclick=e=>{const b=e.target.closest(".del");if(b&&confirm("O'chirilsinmi?")){oylik.splice(+b.dataset.i,1);store.set("oylik",oylik);renderO()}};
+renderO();
+
+/* OBYOM */
+let obyom=store.get("obyom",[]);
+$("#bDate").value=today();
+$("#bName").value=store.get("bName","");
+$("#bName").oninput=e=>store.set("bName",e.target.value);
+function bCalc(){const t=(parseFloat($("#bCnt").value)||0)*(parseFloat($("#bPrice").value)||0);$("#bToday").textContent="Bugun: "+fmt(t)+" so'm";return t}
+$("#bCnt").oninput=bCalc;$("#bPrice").oninput=bCalc;
+function renderB(){
+  $("#bList").innerHTML=obyom.length?obyom.map((x,i)=>"<div class='item'><div><b>"+esc(x.name||"—")+"</b><small>"+x.date+" · "+fmt(x.cnt)+" ta × "+fmt(x.price)+"</small></div><div style='display:flex;align-items:center;gap:4px'><span class='amt'>"+fmt(x.total)+"</span><button class='del' data-i='"+i+"'>✕</button></div></div>").join(""):"<div class='hint'>Hali yozuv yo'q</div>";
+  $("#bTotal").textContent=fmt(obyom.reduce((a,x)=>a+x.total,0))+" so'm";
+}
+$("#bSave").onclick=()=>{
+  const c=parseFloat($("#bCnt").value),p=parseFloat($("#bPrice").value);
+  if(isNaN(c)||isNaN(p)){toast("Soni va narxini kiriting");return}
+  obyom.push({name:$("#bName").value.trim(),date:$("#bDate").value||today(),cnt:c,price:p,total:c*p});
+  store.set("obyom",obyom);$("#bCnt").value="";bCalc();renderB();toast("Saqlandi ✓");
+};
+$("#bList").onclick=e=>{const b=e.target.closest(".del");if(b&&confirm("O'chirilsinmi?")){obyom.splice(+b.dataset.i,1);store.set("obyom",obyom);renderB()}};
+renderB();
+
+/* TELEGRAM */
+$("#tgToken").value=store.get("tgToken","");
+$("#tgChat").value=store.get("tgChat","");
+$("#tgSave").onclick=()=>{store.set("tgToken",$("#tgToken").value.trim());store.set("tgChat",$("#tgChat").value.trim());toast("Saqlandi ✓")};
+async function tg(text){
+  const token=store.get("tgToken",""),chat=store.get("tgChat","");
+  if(!token||!chat){toast("Avval Sozlama bo'limida bot ma'lumotini kiriting");return false}
+  try{
+    for(let i=0;i<text.length;i+=3900){
+      const r=await fetch("https://api.telegram.org/bot"+token+"/sendMessage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:chat,text:text.slice(i,i+3900)})});
+      const j=await r.json();if(!j.ok){toast("Xato: "+(j.description||"yuborilmadi"));return false}
+    }
+    toast("Telegramga yuborildi ✓");return true;
+  }catch(e){toast("Internet yoki ulanishda xato");return false}
+}
+$("#tgTest").onclick=()=>tg("✅ Razva Qaytlari: ulanish ishlayapti");
+$("#oSend").onclick=()=>{
+  if(!oylik.length){toast("Yozuv yo'q");return}
+  let t="👷 OYLIK ISHCHILAR\n\n";
+  oylik.forEach(x=>t+=x.date+" | "+(x.name||"—")+" | "+fmt(x.sum)+" so'm\n");
+  t+="\nJami: "+fmt(oylik.reduce((a,x)=>a+x.sum,0))+" so'm";
+  tg(t);
+};
+$("#bSend").onclick=()=>{
+  if(!obyom.length){toast("Yozuv yo'q");return}
+  let t="📦 OBYOM ISHCHILAR\n\n";
+  obyom.forEach(x=>t+=x.date+" | "+(x.name||"—")+" | "+fmt(x.cnt)+" ta × "+fmt(x.price)+" = "+fmt(x.total)+" so'm\n");
+  t+="\nJami: "+fmt(obyom.reduce((a,x)=>a+x.total,0))+" so'm";
+  tg(t);
+};
+$("#sendSheet").onclick=()=>{
+  let t="📊 JADVAL"+(store.get("sName","")?" — "+store.get("sName",""):"")+"\n\n";let any=false;
+  for(let r=0;r<sheet.rows;r++){
+    const cells=[];let has=false;
+    for(let c=0;c<sheet.cols;c++){const d=disp(r,c);if(d!=="")has=true;cells.push(d||"-")}
+    if(has){any=true;t+=(r+1)+": "+cells.join(" | ")+"\n"}
+  }
+  if(!any){toast("Jadval bo'sh");return}
+  t+="\nΣ: ";const s=[];for(let c=0;c<sheet.cols;c++)s.push(colL(c)+"="+fmt(colSum(c)));t+=s.join(", ");
+  tg(t);
+};
+</script>
+</body>
+</html>
